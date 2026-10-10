@@ -1,5 +1,9 @@
 {
     "recommendations": [
-       "Webnative.webnative"
-    ]
+        "WebNative.webnative",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig",
+        "dbaeumer.vscode-eslint"
+    ],
+    "unwantedRecommendations": ["biomejs.biome"]
 }
