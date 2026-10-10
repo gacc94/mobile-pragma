@@ -1,13 +1,142 @@
-<ion-header [translucent]="true">
-    <ion-toolbar>
-        <ion-title>detail</ion-title>
+<ion-header [translucent]="true" class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home" text=""></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ store.selectedBreed()?.name || 'Detalle de Raza' }}</ion-title>
     </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-        <ion-toolbar>
-            <ion-title size="large">detail</ion-title>
-        </ion-toolbar>
-    </ion-header>
+<ion-content [scrollY]="false" class="detail-content">
+    <!-- Loading State -->
+    @if (store.isLoading() && !store.selectedBreed()) {
+    <div class="detail-container" aria-busy="true" aria-label="Loading cat breed details">
+        <div class="fixed-hero-wrapper skeleton-hero">
+            <ion-skeleton-text [animated]="true" style="width: 100%; height: 100%"></ion-skeleton-text>
+        </div>
+        <div class="scrollable-info-pane">
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 60%; height: 28px; margin-bottom: 16px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 100%; height: 16px; margin-bottom: 8px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 95%; height: 16px; margin-bottom: 8px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 80%; height: 16px; margin-bottom: 24px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 40%; height: 24px; margin-bottom: 12px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+                [animated]="true"
+                style="width: 100%; height: 20px; margin-bottom: 12px"
+            ></ion-skeleton-text>
+        </div>
+    </div>
+    }
+
+    <!-- Error / Not Found State -->
+    @if (!store.isLoading() && !store.selectedBreed()) {
+    <div class="state-message error-state" role="alert">
+        <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
+        <h2>Raza no encontrada</h2>
+        <p>No se encontró la información de la raza solicitada.</p>
+        <ion-button fill="outline" color="primary" routerLink="/home">
+            <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+            Volver a Catbreeds
+        </ion-button>
+    </div>
+    }
+
+    <!-- Breed Details View -->
+    @if (store.selectedBreed(); as breed) {
+    <div class="detail-container">
+        <!-- 1. Fixed Upper Half: Image never scrolls -->
+        <div class="fixed-hero-wrapper">
+            <img
+                [src]="breed.image?.url || fallbackImageUrl"
+                [alt]="breed.name + ' cat'"
+                class="hero-image"
+                (error)="onImageError($event)"
+            />
+        </div>
+
+        <!-- 2. Scrollable Lower Half: Scrollable info container -->
+        <div class="scrollable-info-pane" tabindex="0" role="region" aria-label="Información de la raza">
+            <header class="pane-header">
+                <h1 class="breed-title">{{ breed.name }}</h1>
+                @if (breed.temperament) {
+                <p class="breed-temperament">{{ breed.temperament }}</p>
+                }
+            </header>
+
+            <section class="info-section description-section">
+                <h2 class="section-title">Descripción</h2>
+                <p class="description-text">{{ breed.description }}</p>
+            </section>
+
+            <section class="info-section traits-section">
+                <h2 class="section-title">Características</h2>
+
+                <div class="trait-item">
+                    <div class="trait-header">
+                        <span class="trait-label">
+                            <ion-icon name="location-outline" class="trait-icon"></ion-icon>
+                            Nombre del País:
+                        </span>
+                        <strong class="trait-value">{{ breed.origin }}</strong>
+                    </div>
+                </div>
+
+                <div class="trait-item">
+                    <div class="trait-header">
+                        <span class="trait-label">
+                            <ion-icon name="star" class="trait-icon"></ion-icon>
+                            Inteligencia:
+                        </span>
+                        <ion-badge color="secondary" class="trait-badge"> {{ breed.intelligence }} / 5 </ion-badge>
+                    </div>
+                    <ion-progress-bar
+                        [value]="breed.intelligence / 5"
+                        color="secondary"
+                        class="trait-progress"
+                    ></ion-progress-bar>
+                </div>
+
+                <div class="trait-item">
+                    <div class="trait-header">
+                        <span class="trait-label">
+                            <ion-icon name="heart-outline" class="trait-icon"></ion-icon>
+                            Adaptabilidad:
+                        </span>
+                        <ion-badge color="tertiary" class="trait-badge"> {{ breed.adaptability }} / 5 </ion-badge>
+                    </div>
+                    <ion-progress-bar
+                        [value]="breed.adaptability / 5"
+                        color="tertiary"
+                        class="trait-progress"
+                    ></ion-progress-bar>
+                </div>
+
+                <div class="trait-item">
+                    <div class="trait-header">
+                        <span class="trait-label">
+                            <ion-icon name="time-outline" class="trait-icon"></ion-icon>
+                            Tiempo de vida:
+                        </span>
+                        <strong class="trait-value">{{ breed.life_span }} años</strong>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    }
 </ion-content>
