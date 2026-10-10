@@ -1,6 +1,32 @@
 <ion-header [translucent]="true" class="ion-no-border">
     <ion-toolbar color="primary">
         <ion-title>Catbreeds</ion-title>
+        <ion-buttons slot="end">
+            <ion-button id="theme-popover-trigger" aria-label="Cambiar tema">
+                <ion-icon slot="icon-only" [name]="themeStore.themeIcon()"></ion-icon>
+            </ion-button>
+            <ion-popover trigger="theme-popover-trigger" [dismissOnSelect]="true" alignment="end" side="bottom">
+                <ng-template>
+                    <ion-content>
+                        <ion-list lines="full" class="theme-popover-list">
+                            <ion-radio-group
+                                [value]="themeStore.mode()"
+                                (ionChange)="onSelectTheme($event.detail.value)"
+                            >
+                                @for (option of themeStore.themeOptions(); track option.mode) {
+                                <ion-item button="true" [detail]="false">
+                                    <ion-icon slot="start" [name]="option.icon" aria-hidden="true"></ion-icon>
+                                    <ion-radio [value]="option.mode" justify="space-between"
+                                        >{{ option.label }}</ion-radio
+                                    >
+                                </ion-item>
+                                }
+                            </ion-radio-group>
+                        </ion-list>
+                    </ion-content>
+                </ng-template>
+            </ion-popover>
+        </ion-buttons>
     </ion-toolbar>
     <ion-toolbar color="primary" class="search-toolbar">
         <ion-searchbar

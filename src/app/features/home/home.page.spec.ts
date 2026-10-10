@@ -4,6 +4,7 @@ import { Router, provideRouter } from '@angular/router';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { HomePage } from './home.page';
 import { CatBreedsStore } from '../../core/store/cat-breeds.store';
+import { ThemeStore } from '../../core/store/theme.store';
 import { CatBreed } from '../../core/models/cat-breed.model';
 
 const mockBreed: CatBreed = {
@@ -45,6 +46,13 @@ describe('HomePage', () => {
         clearSearch: ReturnType<typeof vi.fn>;
     };
 
+    let themeStoreMock: {
+        mode: WritableSignal<string>;
+        themeIcon: WritableSignal<string>;
+        themeOptions: WritableSignal<Array<{ mode: string; label: string; icon: string }>>;
+        setThemeMode: ReturnType<typeof vi.fn>;
+    };
+
     beforeEach(() => {
         searchQuerySignal = signal('');
         isLoadingSignal = signal(false);
@@ -66,9 +74,24 @@ describe('HomePage', () => {
             clearSearch: vi.fn(),
         };
 
+        themeStoreMock = {
+            mode: signal('system'),
+            themeIcon: signal('contrast-outline'),
+            themeOptions: signal([
+                { mode: 'light', label: 'Claro', icon: 'sunny-outline' },
+                { mode: 'dark', label: 'Oscuro', icon: 'moon-outline' },
+                { mode: 'system', label: 'Sistema', icon: 'contrast-outline' },
+            ]),
+            setThemeMode: vi.fn(),
+        };
+
         TestBed.configureTestingModule({
             imports: [HomePage],
-            providers: [provideRouter([]), { provide: CatBreedsStore, useValue: storeMock }],
+            providers: [
+                provideRouter([]),
+                { provide: CatBreedsStore, useValue: storeMock },
+                { provide: ThemeStore, useValue: themeStoreMock },
+            ],
         });
 
         router = TestBed.inject(Router);
@@ -185,5 +208,15 @@ describe('HomePage', () => {
         const emptyState = compiled.querySelector('.empty-state');
         expect(emptyState).toBeTruthy();
         expect(emptyState?.textContent).toContain('No cat breeds match "UnknownCat"');
+    });
+
+    it('should render theme button in header and call themeStore.setThemeMode on onSelectTheme', () => {
+        fixture.detectChanges();
+        const compiled = fixture.nativeElement as HTMLElement;
+        const themeBtn = compiled.querySelector('#theme-popover-trigger');
+        expect(themeBtn).toBeTruthy();
+
+        component.onSelectTheme('dark');
+        expect(themeStoreMock.setThemeMode).toHaveBeenCalledWith('dark');
     });
 });

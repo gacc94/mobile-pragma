@@ -1,11 +1,13 @@
 .home-content {
-    --background: var(--ion-background-color, #f8fafc);
+    --background: var(--ion-background-color);
 }
 
 .search-toolbar {
-    --padding-top: 0;
-    --padding-bottom: 8px;
-    --padding-horizontal: 8px;
+    --padding: 0 8px 8px;
+}
+
+#theme-popover-trigger {
+    --color: #ffffff;
 }
 
 .custom-searchbar {
@@ -73,12 +75,12 @@
     padding: 6px 10px;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--ion-color-primary, #3880ff);
+    color: var(--ion-color-primary);
     cursor: pointer;
     border-radius: 8px;
 
     &:hover {
-        background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1);
+        background-color: rgba(var(--ion-color-primary-rgb), 0.1);
     }
 }
 
@@ -115,7 +117,7 @@
 
 .footer-icon {
     font-size: 1rem;
-    color: var(--ion-color-primary, #3880ff);
+    color: var(--ion-color-primary);
 }
 
 .origin-value {

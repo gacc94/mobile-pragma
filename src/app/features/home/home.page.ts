@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
     IonBadge,
     IonButton,
+    IonButtons,
     IonCard,
     IonCardContent,
     IonCardHeader,
@@ -10,6 +11,11 @@ import {
     IonContent,
     IonHeader,
     IonIcon,
+    IonItem,
+    IonList,
+    IonPopover,
+    IonRadio,
+    IonRadioGroup,
     IonRefresher,
     IonRefresherContent,
     IonSearchbar,
@@ -21,12 +27,16 @@ import { addIcons } from 'ionicons';
 import {
     alertCircleOutline,
     arrowDownOutline,
+    contrastOutline,
     locationOutline,
+    moonOutline,
     refreshOutline,
     searchOutline,
     star,
+    sunnyOutline,
 } from 'ionicons/icons';
 import { CatBreedsStore } from '../../core/store/cat-breeds.store';
+import { ThemeMode, ThemeStore } from '../../core/store/theme.store';
 
 @Component({
     selector: 'app-home',
@@ -37,6 +47,12 @@ import { CatBreedsStore } from '../../core/store/cat-breeds.store';
         IonHeader,
         IonToolbar,
         IonTitle,
+        IonButtons,
+        IonPopover,
+        IonList,
+        IonItem,
+        IonRadioGroup,
+        IonRadio,
         IonSearchbar,
         IonContent,
         IonRefresher,
@@ -53,6 +69,7 @@ import { CatBreedsStore } from '../../core/store/cat-breeds.store';
 })
 export class HomePage {
     readonly store = inject(CatBreedsStore);
+    readonly themeStore = inject(ThemeStore);
     private readonly router = inject(Router);
 
     readonly fallbackImageUrl = 'assets/splash/cat-rafiki.svg';
@@ -65,6 +82,9 @@ export class HomePage {
             searchOutline,
             locationOutline,
             star,
+            sunnyOutline,
+            moonOutline,
+            contrastOutline,
         });
     }
 
@@ -94,6 +114,12 @@ export class HomePage {
         const img = event.target as HTMLImageElement;
         if (img && !img.src.includes(this.fallbackImageUrl)) {
             img.src = this.fallbackImageUrl;
+        }
+    }
+
+    onSelectTheme(mode: string): void {
+        if (mode === 'light' || mode === 'dark' || mode === 'system') {
+            this.themeStore.setThemeMode(mode);
         }
     }
 }
