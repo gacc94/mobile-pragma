@@ -1,4 +1,10 @@
 {
+    "name": "Catbreeds",
+    "short_name": "Catbreeds",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3880ff",
     "icons": [
         {
             "src": "assets/icons/icon-48.webp",
