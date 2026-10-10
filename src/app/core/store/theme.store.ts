@@ -1,5 +1,6 @@
 import { computed, effect } from '@angular/core';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { Preferences } from '@capacitor/preferences';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -22,11 +23,15 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
     { mode: 'system', label: 'Sistema', icon: 'contrast-outline' },
 ];
 
+function isValidThemeMode(value: unknown): value is ThemeMode {
+    return value === 'light' || value === 'dark' || value === 'system';
+}
+
 function getStoredMode(): ThemeMode {
     try {
         if (typeof localStorage !== 'undefined') {
             const stored = localStorage.getItem(THEME_STORAGE_KEY);
-            if (stored === 'light' || stored === 'dark' || stored === 'system') {
+            if (isValidThemeMode(stored)) {
                 return stored;
             }
         }
@@ -86,10 +91,12 @@ export const ThemeStore = signalStore(
     }),
     withMethods((store) => ({
         /**
-         * Sets and persists the application theme mode ('light', 'dark', or 'system').
+         * Sets and persists the theme mode across localStorage (instant sync)
+         * and Capacitor Preferences (native UserDefaults / SharedPreferences).
          */
         setThemeMode(mode: ThemeMode): void {
             patchState(store, { mode });
+
             try {
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem(THEME_STORAGE_KEY, mode);
@@ -97,6 +104,10 @@ export const ThemeStore = signalStore(
             } catch {
                 // Storage access handling
             }
+
+            void Preferences.set({ key: THEME_STORAGE_KEY, value: mode }).catch(() => {
+                // Non-fatal native preference save error
+            });
         },
 
         /**
@@ -108,6 +119,24 @@ export const ThemeStore = signalStore(
     })),
     withHooks({
         onInit(store) {
+            // Asynchronously hydrate from Capacitor Preferences (UserDefaults / SharedPreferences)
+            void Preferences.get({ key: THEME_STORAGE_KEY })
+                .then(({ value }) => {
+                    if (isValidThemeMode(value) && value !== store.mode()) {
+                        patchState(store, { mode: value });
+                        try {
+                            if (typeof localStorage !== 'undefined') {
+                                localStorage.setItem(THEME_STORAGE_KEY, value);
+                            }
+                        } catch {
+                            // Non-fatal storage sync
+                        }
+                    }
+                })
+                .catch(() => {
+                    // Non-fatal native preference read error
+                });
+
             // Listen to OS system color scheme changes if available
             if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
                 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
