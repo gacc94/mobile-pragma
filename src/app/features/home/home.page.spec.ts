@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, WritableSignal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
+import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { HomePage } from './home.page';
 import { CatBreedsStore } from '../../core/store/cat-breeds.store';
@@ -32,6 +33,8 @@ describe('HomePage', () => {
     let errorSignal: WritableSignal<string | null>;
     let totalFilteredBreedsSignal: WritableSignal<number>;
     let filteredBreedsSignal: WritableSignal<CatBreed[]>;
+    let visibleBreedsSignal: WritableSignal<CatBreed[]>;
+    let canLoadMoreSignal: WritableSignal<boolean>;
 
     let storeMock: {
         searchQuery: WritableSignal<string>;
@@ -40,10 +43,14 @@ describe('HomePage', () => {
         error: WritableSignal<string | null>;
         totalFilteredBreeds: WritableSignal<number>;
         filteredBreeds: WritableSignal<CatBreed[]>;
+        visibleBreeds: WritableSignal<CatBreed[]>;
+        canLoadMore: WritableSignal<boolean>;
         loadBreeds: ReturnType<typeof vi.fn>;
         selectBreed: ReturnType<typeof vi.fn>;
         setSearchQuery: ReturnType<typeof vi.fn>;
         clearSearch: ReturnType<typeof vi.fn>;
+        loadMoreBreeds: ReturnType<typeof vi.fn>;
+        resetPagination: ReturnType<typeof vi.fn>;
     };
 
     let themeStoreMock: {
@@ -60,6 +67,8 @@ describe('HomePage', () => {
         errorSignal = signal(null);
         totalFilteredBreedsSignal = signal(1);
         filteredBreedsSignal = signal([mockBreed]);
+        visibleBreedsSignal = signal([mockBreed]);
+        canLoadMoreSignal = signal(false);
 
         storeMock = {
             searchQuery: searchQuerySignal,
@@ -68,10 +77,14 @@ describe('HomePage', () => {
             error: errorSignal,
             totalFilteredBreeds: totalFilteredBreedsSignal,
             filteredBreeds: filteredBreedsSignal,
+            visibleBreeds: visibleBreedsSignal,
+            canLoadMore: canLoadMoreSignal,
             loadBreeds: vi.fn(),
             selectBreed: vi.fn(),
             setSearchQuery: vi.fn(),
             clearSearch: vi.fn(),
+            loadMoreBreeds: vi.fn(),
+            resetPagination: vi.fn(),
         };
 
         themeStoreMock = {
@@ -165,6 +178,7 @@ describe('HomePage', () => {
         isLoadingSignal.set(true);
         hasBreedsSignal.set(false);
         filteredBreedsSignal.set([]);
+        visibleBreedsSignal.set([]);
         fixture.detectChanges();
 
         const compiled = fixture.nativeElement as HTMLElement;
@@ -176,6 +190,7 @@ describe('HomePage', () => {
         isLoadingSignal.set(false);
         hasBreedsSignal.set(false);
         filteredBreedsSignal.set([]);
+        visibleBreedsSignal.set([]);
         errorSignal.set('Network connection failed');
         fixture.detectChanges();
 
@@ -190,6 +205,7 @@ describe('HomePage', () => {
         hasBreedsSignal.set(true);
         totalFilteredBreedsSignal.set(0);
         filteredBreedsSignal.set([]);
+        visibleBreedsSignal.set([]);
         searchQuerySignal.set('UnknownCat');
         fixture.detectChanges();
 
@@ -207,5 +223,18 @@ describe('HomePage', () => {
 
         component.onSelectTheme('dark');
         expect(themeStoreMock.setThemeMode).toHaveBeenCalledWith('dark');
+    });
+
+    it('should call store.loadMoreBreeds and complete event on onLoadMore', () => {
+        fixture.detectChanges();
+        const completeSpy = vi.fn();
+        const infiniteEvent = {
+            target: { complete: completeSpy },
+        } as unknown as InfiniteScrollCustomEvent;
+
+        component.onLoadMore(infiniteEvent);
+
+        expect(storeMock.loadMoreBreeds).toHaveBeenCalledTimes(1);
+        expect(completeSpy).toHaveBeenCalledTimes(1);
     });
 });

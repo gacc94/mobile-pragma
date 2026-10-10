@@ -40,6 +40,8 @@
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 340px;
 
     &:active {
         transform: scale(0.99);

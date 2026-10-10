@@ -1,5 +1,14 @@
 {
     "$schema": "https://json.schemastore.org/prettierrc",
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "overrides": [
+        {
+            "files": ["*.html"],
+            "excludeFiles": [],
+            "options": {
+                "parser": "angular"
+            }
+        }
+    ]
 }

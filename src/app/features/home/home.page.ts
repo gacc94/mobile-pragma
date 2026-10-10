@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+    InfiniteScrollCustomEvent,
     IonBadge,
     IonButton,
     IonButtons,
@@ -11,6 +12,8 @@ import {
     IonContent,
     IonHeader,
     IonIcon,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     IonItem,
     IonList,
     IonPopover,
@@ -67,6 +70,8 @@ import { ImageUrlFallbackPipe } from '../../shared/pipes/image-url-fallback.pipe
         IonIcon,
         IonButton,
         IonBadge,
+        IonInfiniteScroll,
+        IonInfiniteScrollContent,
         ImageFallbackDirective,
         ImageUrlFallbackPipe,
     ],
@@ -118,5 +123,10 @@ export class HomePage {
         if (mode === 'light' || mode === 'dark' || mode === 'system') {
             this.themeStore.setThemeMode(mode);
         }
+    }
+
+    onLoadMore(event: InfiniteScrollCustomEvent): void {
+        this.store.loadMoreBreeds();
+        void event.target?.complete();
     }
 }

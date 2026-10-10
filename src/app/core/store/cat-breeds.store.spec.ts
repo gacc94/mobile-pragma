@@ -164,4 +164,37 @@ describe('CatBreedsStore', () => {
         const notFound = store.getBreedById('unknown');
         expect(notFound).toBeUndefined();
     });
+
+    it('should paginate visibleBreeds progressively and handle loadMoreBreeds', async () => {
+        const manyBreeds: CatBreed[] = Array.from({ length: 25 }, (_, i) => ({
+            id: `breed-${i}`,
+            name: `Breed ${i}`,
+            origin: 'Origin',
+            description: `Description ${i}`,
+            life_span: '12 - 15',
+            adaptability: 4,
+            intelligence: 4,
+        }));
+
+        const req = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
+        req.flush(manyBreeds);
+        await Promise.resolve();
+        TestBed.flushEffects();
+
+        expect(store.totalBreeds()).toBe(25);
+        expect(store.visibleBreeds().length).toBe(12);
+        expect(store.canLoadMore()).toBe(true);
+
+        store.loadMoreBreeds();
+        expect(store.visibleBreeds().length).toBe(24);
+        expect(store.canLoadMore()).toBe(true);
+
+        store.loadMoreBreeds();
+        expect(store.visibleBreeds().length).toBe(25);
+        expect(store.canLoadMore()).toBe(false);
+
+        store.setSearchQuery('Breed 1');
+        // Search query resets pagination
+        expect(store.visibleBreeds().length).toBeLessThanOrEqual(12);
+    });
 });
