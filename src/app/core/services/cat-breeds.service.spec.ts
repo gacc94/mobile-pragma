@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { CatBreedsService } from './cat-breeds.service';
 import { CatBreed } from '../models/cat-breed.model';
@@ -43,25 +44,18 @@ describe('CatBreedsService', () => {
             providers: [CatBreedsService, provideHttpClient(), provideHttpClientTesting()],
         });
 
-        service = TestBed.inject(CatBreedsService);
         httpTestingController = TestBed.inject(HttpTestingController);
+        service = TestBed.inject(CatBreedsService);
+        TestBed.tick();
     });
 
     afterEach(() => {
         httpTestingController.verify();
     });
 
-    it('should be created', () => {
+    it('should be created and initiate breeds fetch via httpResource', async () => {
         expect(service).toBeTruthy();
         expect(service.breeds()).toEqual([]);
-        expect(service.isLoading()).toBe(false);
-    });
-
-    it('should load breeds and update signal state', () => {
-        service.loadBreeds().subscribe((breeds) => {
-            expect(breeds.length).toBe(2);
-            expect(breeds).toEqual(mockBreeds);
-        });
 
         const req = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
         expect(req.request.method).toBe('GET');
@@ -70,15 +64,49 @@ describe('CatBreedsService', () => {
         );
 
         req.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
 
         expect(service.breeds()).toEqual(mockBreeds);
         expect(service.isLoading()).toBe(false);
+        expect(service.error()).toBeNull();
     });
 
-    it('should filter breeds by search query case-insensitively', () => {
-        service.loadBreeds().subscribe();
+    it('should handle error when httpResource fails', async () => {
+        const req = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
+        req.flush('Failed to fetch', { status: 500, statusText: 'Internal Server Error' });
+        await Promise.resolve();
+        TestBed.tick();
+
+        expect(service.isLoading()).toBe(false);
+        expect(service.error()).toContain('500');
+    });
+
+    it('should reload breeds on loadBreeds()', async () => {
+        const initialReq = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
+        initialReq.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
+
+        expect(service.breeds().length).toBe(2);
+
+        service.loadBreeds();
+        TestBed.tick();
+
+        const reloadReq = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
+        expect(reloadReq.request.method).toBe('GET');
+        reloadReq.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
+
+        expect(service.breeds()).toEqual(mockBreeds);
+    });
+
+    it('should filter breeds by search query case-insensitively', async () => {
         const req = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
         req.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
 
         service.setSearchQuery('beng');
         expect(service.filteredBreeds().length).toBe(1);
@@ -92,10 +120,11 @@ describe('CatBreedsService', () => {
         expect(service.filteredBreeds().length).toBe(2);
     });
 
-    it('should find breed by ID from state', () => {
-        service.loadBreeds().subscribe();
+    it('should find breed by ID from state', async () => {
         const req = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
         req.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
 
         const breed = service.getBreedById('abys');
         expect(breed).toBeDefined();
@@ -103,5 +132,30 @@ describe('CatBreedsService', () => {
 
         const notFound = service.getBreedById('unknown');
         expect(notFound).toBeUndefined();
+    });
+
+    it('should create a single breed resource with getBreedResource', async () => {
+        const reqInitial = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds');
+        reqInitial.flush(mockBreeds);
+        await Promise.resolve();
+        TestBed.tick();
+
+        const idSignal = signal<string | undefined>(undefined);
+        const singleResource = TestBed.runInInjectionContext(() => service.getBreedResource(() => idSignal()));
+
+        TestBed.tick();
+        expect(singleResource.value()).toBeUndefined();
+        httpTestingController.expectNone('https://api.thecatapi.com/v1/breeds/abys');
+
+        idSignal.set('abys');
+        TestBed.tick();
+
+        const singleReq = httpTestingController.expectOne('https://api.thecatapi.com/v1/breeds/abys');
+        expect(singleReq.request.method).toBe('GET');
+        singleReq.flush(mockBreeds[0]);
+        await Promise.resolve();
+        TestBed.tick();
+
+        expect(singleResource.value()?.name).toBe('Abyssinian');
     });
 });

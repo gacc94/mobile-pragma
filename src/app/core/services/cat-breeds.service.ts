@@ -1,27 +1,55 @@
-import { Injectable, Service, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, finalize, tap, throwError } from 'rxjs';
+import { Service, computed, signal } from '@angular/core';
+import { httpResource, HttpResourceRef } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { CatBreed } from '../models/cat-breed.model';
 
 @Service()
 export class CatBreedsService {
-    private readonly http = inject(HttpClient);
     private readonly baseUrl = environment.catApiUrl;
     private readonly apiKey = environment.catApiKey;
 
-    // Reactive State Signals
-    private readonly breedsState = signal<CatBreed[]>([]);
-    readonly breeds = this.breedsState.asReadonly();
+    /**
+     * Primary reactive HTTP resource for fetching all cat breeds.
+     * httpResource automatically dispatches the GET request on creation and
+     * manages loading, error, and resolved signal states natively.
+     */
+    readonly breedsResource: HttpResourceRef<CatBreed[]> = httpResource<CatBreed[]>(
+        () => ({
+            url: `${this.baseUrl}/breeds`,
+            headers: {
+                'x-api-key': this.apiKey,
+            },
+        }),
+        {
+            defaultValue: [],
+        },
+    );
 
-    readonly isLoading = signal<boolean>(false);
-    readonly error = signal<string | null>(null);
+    // Derived State Signals
+    readonly breeds = computed<CatBreed[]>(() => this.breedsResource.value());
+    readonly isLoading = this.breedsResource.isLoading;
+    readonly status = this.breedsResource.status;
+
+    readonly error = computed<string | null>(() => {
+        const err = this.breedsResource.error();
+        if (!err) {
+            return null;
+        }
+        if (typeof err === 'string') {
+            return err;
+        }
+        if (err instanceof Error) {
+            return err.message;
+        }
+        return (err as { message?: string })?.message ?? 'Failed to load cat breeds. Please try again.';
+    });
+
     readonly searchQuery = signal<string>('');
 
     // Computed filtered breeds based on search query (case-insensitive English filter)
-    readonly filteredBreeds = computed(() => {
+    readonly filteredBreeds = computed<CatBreed[]>(() => {
         const query = this.searchQuery().trim().toLowerCase();
-        const allBreeds = this.breedsState();
+        const allBreeds = this.breeds();
 
         if (!query) {
             return allBreeds;
@@ -31,52 +59,43 @@ export class CatBreedsService {
     });
 
     /**
-     * Loads cat breeds from TheCatAPI and populates the reactive signal state.
+     * Imperatively triggers a reload of the breeds resource.
+     * Useful for pull-to-refresh or retry buttons.
      */
-    loadBreeds(): Observable<CatBreed[]> {
-        this.isLoading.set(true);
-        this.error.set(null);
-
-        const headers = new HttpHeaders({
-            'x-api-key': this.apiKey,
-        });
-
-        return this.http.get<CatBreed[]>(`${this.baseUrl}/breeds`, { headers }).pipe(
-            tap({
-                next: (breeds) => {
-                    this.breedsState.set(breeds);
-                },
-                error: (err) => {
-                    const message = err?.message ?? 'Failed to load cat breeds. Please try again.';
-                    this.error.set(message);
-                },
-            }),
-            finalize(() => {
-                this.isLoading.set(false);
-            }),
-            catchError((err) => {
-                return throwError(() => err);
-            }),
-        );
+    loadBreeds(): void {
+        this.breedsResource.reload();
     }
 
     /**
-     * Returns a computed Signal with the breed matching the given ID from current state,
-     * or fetches from the API if not yet in state.
+     * Finds a breed by ID in the currently loaded state.
      */
     getBreedById(id: string): CatBreed | undefined {
-        return this.breedsState().find((breed) => breed.id === id);
+        return this.breeds().find((breed) => breed.id === id);
     }
 
     /**
-     * Fetches single breed by ID from API if direct URL navigation occurred.
+     * Creates an httpResource for a single breed by ID computation/signal.
+     * If the ID is undefined or empty, no request is dispatched.
      */
-    fetchBreedById(id: string): Observable<CatBreed> {
-        const headers = new HttpHeaders({
-            'x-api-key': this.apiKey,
-        });
+    getBreedResource(idComputation: () => string | undefined): HttpResourceRef<CatBreed | undefined> {
+        return httpResource<CatBreed | undefined>(
+            () => {
+                const id = idComputation();
+                if (!id) {
+                    return undefined;
+                }
 
-        return this.http.get<CatBreed>(`${this.baseUrl}/breeds/${id}`, { headers });
+                return {
+                    url: `${this.baseUrl}/breeds/${id}`,
+                    headers: {
+                        'x-api-key': this.apiKey,
+                    },
+                };
+            },
+            {
+                defaultValue: undefined,
+            },
+        );
     }
 
     /**

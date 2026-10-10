@@ -15,6 +15,11 @@ const config: CapacitorConfig = {
             splashFullScreen: false,
             splashImmersive: false,
         },
+        SystemBars: {
+            insetsHandling: 'css',
+            initialViewportFitValueHint: 'cover',
+            hidden: false,
+        },
     },
 };
 
