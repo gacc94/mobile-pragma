@@ -1,23 +1,128 @@
-<ion-header [translucent]="true">
-    <ion-toolbar>
-        <ion-title> Blank </ion-title>
+<ion-header [translucent]="true" class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-title>Catbreeds</ion-title>
+    </ion-toolbar>
+    <ion-toolbar color="primary" class="search-toolbar">
+        <ion-searchbar
+            [value]="store.searchQuery()"
+            placeholder="Catbreeds"
+            debounce="200"
+            (ionInput)="onSearchInput($event)"
+            (ionClear)="onSearchClear()"
+            class="custom-searchbar"
+            aria-label="Search cat breeds in English"
+        ></ion-searchbar>
     </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-        <ion-toolbar>
-            <ion-title size="large">Blank</ion-title>
-        </ion-toolbar>
-    </ion-header>
+<ion-content [fullscreen]="true" class="home-content">
+    <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+        <ion-refresher-content
+            pullingIcon="arrow-down-outline"
+            pullingText="Pull to refresh breeds"
+            refreshingSpinner="crescent"
+            refreshingText="Refreshing breeds..."
+        ></ion-refresher-content>
+    </ion-refresher>
 
-    <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>
-            Start with Ionic
-            <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components"
-                >UI Components</a
+    <div class="content-container">
+        <!-- Loading Skeletons -->
+        @if (store.isLoading() && !store.hasBreeds()) {
+        <div class="skeleton-list" aria-busy="true" aria-label="Loading cat breeds">
+            @for (item of [1, 2, 3]; track item) {
+            <ion-card class="breed-card skeleton-card">
+                <ion-card-header class="card-header">
+                    <ion-skeleton-text [animated]="true" style="width: 50%; height: 24px"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" style="width: 15%; height: 20px"></ion-skeleton-text>
+                </ion-card-header>
+                <div class="card-image-wrapper skeleton-image">
+                    <ion-skeleton-text [animated]="true" style="width: 100%; height: 220px"></ion-skeleton-text>
+                </div>
+                <ion-card-content class="card-footer">
+                    <ion-skeleton-text [animated]="true" style="width: 40%; height: 18px"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" style="width: 30%; height: 18px"></ion-skeleton-text>
+                </ion-card-content>
+            </ion-card>
+            }
+        </div>
+        }
+
+        <!-- Error State -->
+        @if (store.error() && !store.hasBreeds()) {
+        <div class="state-message error-state" role="alert">
+            <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
+            <h2>Unable to Load Breeds</h2>
+            <p>{{ store.error() }}</p>
+            <ion-button fill="outline" color="primary" (click)="store.loadBreeds()">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Retry
+            </ion-button>
+        </div>
+        }
+
+        <!-- Empty Search State -->
+        @if (!store.isLoading() && store.hasBreeds() && store.totalFilteredBreeds() === 0) {
+        <div class="state-message empty-state" role="status">
+            <ion-icon name="search-outline" class="state-icon"></ion-icon>
+            <h2>No Breeds Found</h2>
+            <p>No cat breeds match "{{ store.searchQuery() }}" in English.</p>
+            <ion-button fill="outline" color="primary" (click)="onSearchClear()"> Clear Search </ion-button>
+        </div>
+        }
+
+        <!-- Breeds Cards Grid -->
+        @if (store.filteredBreeds().length > 0) {
+        <section class="cards-grid" aria-label="Cat breeds list">
+            @for (breed of store.filteredBreeds(); track breed.id) {
+            <ion-card
+                class="breed-card"
+                (click)="onSelectBreed(breed.id)"
+                (keydown.enter)="onSelectBreed(breed.id)"
+                role="article"
+                tabindex="0"
             >
-        </p>
+                <!-- Top line: Breed Name and "Más..." button -->
+                <ion-card-header class="card-header">
+                    <ion-card-title class="breed-name">{{ breed.name }}</ion-card-title>
+                    <button
+                        type="button"
+                        class="more-link"
+                        (click)="onSelectBreed(breed.id); $event.stopPropagation()"
+                        aria-label="View details for {{ breed.name }}"
+                    >
+                        Más...
+                    </button>
+                </ion-card-header>
+
+                <!-- Middle: Cat Image -->
+                <div class="card-image-wrapper">
+                    <img
+                        [src]="breed.image?.url || fallbackImageUrl"
+                        [alt]="breed.name + ' cat'"
+                        class="card-image"
+                        loading="lazy"
+                        (error)="onImageError($event)"
+                    />
+                </div>
+
+                <!-- Bottom line: Country of Origin and Intelligence -->
+                <ion-card-content class="card-footer">
+                    <div class="footer-origin">
+                        <ion-icon name="location-outline" class="footer-icon"></ion-icon>
+                        <span class="origin-label">País de origen:</span>
+                        <strong class="origin-value">{{ breed.origin }}</strong>
+                    </div>
+                    <div class="footer-intelligence">
+                        <span class="intelligence-label">Inteligencia:</span>
+                        <ion-badge color="secondary" class="intelligence-badge">
+                            <ion-icon name="star" class="badge-star"></ion-icon>
+                            {{ breed.intelligence }}
+                        </ion-badge>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+            }
+        </section>
+        }
     </div>
 </ion-content>
