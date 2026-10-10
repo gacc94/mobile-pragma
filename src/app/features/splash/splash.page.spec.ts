@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { SplashPage } from './splash.page';
-import { CatBreedsService } from '../../core/services/cat-breeds.service';
+import { CatBreedsStore } from '../../core/store/cat-breeds.store';
 
 vi.mock('@capacitor/splash-screen', () => ({
     SplashScreen: {
@@ -17,19 +17,19 @@ describe('SplashPage', () => {
     let component: SplashPage;
     let fixture: ComponentFixture<SplashPage>;
     let router: Router;
-    let catBreedsServiceMock: { loadBreeds: ReturnType<typeof vi.fn> };
+    let catBreedsStoreMock: { loadBreeds: ReturnType<typeof vi.fn> };
 
     beforeEach(() => {
         vi.useFakeTimers();
         vi.clearAllMocks();
 
-        catBreedsServiceMock = {
+        catBreedsStoreMock = {
             loadBreeds: vi.fn(),
         };
 
         TestBed.configureTestingModule({
             imports: [SplashPage],
-            providers: [provideRouter([]), { provide: CatBreedsService, useValue: catBreedsServiceMock }],
+            providers: [provideRouter([]), { provide: CatBreedsStore, useValue: catBreedsStoreMock }],
         });
 
         router = TestBed.inject(Router);
@@ -51,7 +51,7 @@ describe('SplashPage', () => {
 
     it('should preload breeds on init', () => {
         fixture.detectChanges();
-        expect(catBreedsServiceMock.loadBreeds).toHaveBeenCalledTimes(1);
+        expect(catBreedsStoreMock.loadBreeds).toHaveBeenCalledTimes(1);
     });
 
     it('should hide native splash screen if running on native platform', () => {

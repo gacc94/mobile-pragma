@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IonContent, IonSpinner } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { CatBreedsService } from '../../core/services/cat-breeds.service';
+import { CatBreedsStore } from '../../core/store/cat-breeds.store';
 
 @Component({
     selector: 'app-splash',
@@ -14,7 +14,7 @@ import { CatBreedsService } from '../../core/services/cat-breeds.service';
 })
 export class SplashPage implements OnInit, OnDestroy {
     private readonly router = inject(Router);
-    private readonly catBreedsService = inject(CatBreedsService);
+    private readonly store = inject(CatBreedsStore);
 
     private transitionTimeoutId: ReturnType<typeof setTimeout> | null = null;
     readonly splashDurationMs = 2000;
@@ -41,7 +41,7 @@ export class SplashPage implements OnInit, OnDestroy {
     }
 
     private preloadBreeds(): void {
-        this.catBreedsService.loadBreeds();
+        void this.store.loadBreeds();
     }
 
     private scheduleNavigation(): void {

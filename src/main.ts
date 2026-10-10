@@ -1,4 +1,5 @@
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { catApiKeyInterceptor } from './app/core/interceptors/cat-api-key.interceptor';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
     RouteReuseStrategy,
@@ -17,7 +18,7 @@ bootstrapApplication(AppComponent, {
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         provideIonicAngular(),
-        provideHttpClient(withFetch()),
+        provideHttpClient(withFetch(), withInterceptors([catApiKeyInterceptor])),
         provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding(), withViewTransitions()),
     ],
 });
