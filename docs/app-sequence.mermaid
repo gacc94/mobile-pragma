@@ -1,0 +1,72 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 User
+    participant Splash as 📱 SplashPage
+    participant Landing as 📋 LandingPage
+    participant Detail as 🔍 DetailPage
+    participant Service as ⚙️ BreedsService
+    participant Http as 🌐 HttpClient
+    participant API as 🐱 TheCatApi (/v1/breeds)
+    participant Cap as 🔌 Capacitor (Native)
+
+    %% ---------------------------------------------------------
+    %% Phase 1: App Launch & Splash Screen Flow
+    %% ---------------------------------------------------------
+    rect rgb(255, 247, 237)
+        Note over User, Cap: Phase 1: Application Boot & Splash Screen
+        User->>Cap: Launch Mobile Application
+        Cap->>Cap: Display OS Launch Screen
+        Cap->>Splash: Bootstrap Angular & Mount SplashPage
+        Splash->>Cap: SplashScreen.hide() (Hide OS Splash)
+        Splash->>User: Display Brand Splash ("Catbreeds" + Cat Illustration)
+        
+        par Background API Pre-fetch
+            Splash->>Service: loadBreeds()
+            Service->>Http: GET /v1/breeds (Header: x-api-key)
+            Http->>API: HTTP Request to api.thecatapi.com
+            API-->>Http: 200 OK (Breeds JSON payload)
+            Http-->>Service: Observable / Signal emit
+            Service-->>Service: Store breeds in Reactive State
+        and Splash Timer Delay
+            Splash->>Splash: Wait 2000ms (Smooth Brand Exposure)
+        end
+
+        Splash->>Landing: Router.navigate(['/home'], replaceUrl: true)
+    end
+
+    %% ---------------------------------------------------------
+    %% Phase 2: Landing Page & Search / Filter Flow
+    %% ---------------------------------------------------------
+    rect rgb(240, 249, 255)
+        Note over User, API: Phase 2: Landing Page & English Breed Search
+        Landing->>Service: breedsSignal() / getBreeds()
+        Service-->>Landing: Return Cached Breeds List
+        Landing->>User: Render Breed Cards Grid (Name, Image, Origin, Intelligence, "Más...")
+
+        User->>Landing: Type in Search Bar (e.g. "Abyssinian" / "Bengal")
+        Landing->>Landing: Filter breeds by name (in English)
+        alt Matches Found
+            Landing->>User: Display Filtered Breed Cards
+        else No Matches Found
+            Landing->>User: Display Empty State ("No breeds found")
+        end
+    end
+
+    %% ---------------------------------------------------------
+    %% Phase 3: Detail View & Half-Scroll Interaction
+    %% ---------------------------------------------------------
+    rect rgb(250, 245, 255)
+        Note over User, Detail: Phase 3: Breed Detail & Fixed Image with Scroll
+        User->>Landing: Tap Card or "Más..." button
+        Landing->>Detail: Navigate to /detail/:id (Pass Breed Data)
+        
+        Detail->>User: Render Screen Layout:<br/>• Header: Breed Name & Back button ("<")<br/>• Top 50%: Fixed Hero Image (Non-movable)<br/>• Bottom 50%: Scrollable Container
+        
+        User->>Detail: Scroll bottom half of the screen
+        Detail->>User: Reveal Extended Details:<br/>• Description (Variable length)<br/>• Origin Country<br/>• Intelligence Rating<br/>• Adaptability Rating<br/>• Life Span (Years)
+
+        User->>Detail: Tap Back Button ("<")
+        Detail->>Landing: Router.navigateBack()
+        Landing->>User: Restore Landing Page with Active Search State
+    end
+

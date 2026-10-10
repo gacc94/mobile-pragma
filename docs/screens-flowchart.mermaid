@@ -1,0 +1,50 @@
+flowchart TD
+    %% Global Styling Definitions
+    classDef startEnd fill:#1E293B,stroke:#0F172A,stroke-width:2px,color:#FFFFFF,font-weight:bold;
+    classDef splashNode fill:#EA580C,stroke:#C2410C,stroke-width:2px,color:#FFFFFF;
+    classDef landingNode fill:#0284C7,stroke:#0369A1,stroke-width:2px,color:#FFFFFF;
+    classDef detailNode fill:#7C3AED,stroke:#6D28D9,stroke-width:2px,color:#FFFFFF;
+    classDef decisionNode fill:#D97706,stroke:#B45309,stroke-width:2px,color:#FFFFFF;
+    classDef actionNode fill:#0D9488,stroke:#0F766E,stroke-width:2px,color:#FFFFFF;
+    classDef stateNode fill:#475569,stroke:#334155,stroke-width:2px,color:#FFFFFF;
+
+    START(["App Launch"]):::startEnd --> INIT["Bootstrap Angular & Detect Platform"]:::actionNode
+
+    %% Subgraph 1: Splash Screen
+    subgraph SUB_SPLASH ["1. Pantalla de Splash"]
+        INIT --> SPLASH_VIEW["Display Splash Screen<br/>• Title: 'Catbreeds'<br/>• Centered Cat Vector Illustration"]:::splashNode
+        SPLASH_VIEW --> SPLASH_TASK["Background Operations:<br/>• Hide Native OS Splash<br/>• Pre-fetch /v1/breeds API<br/>• Wait Timer (1.5 - 2.0s)"]:::actionNode
+        SPLASH_TASK --> SPLASH_TIMEOUT{"Ready & Timer Complete?"}:::decisionNode
+    end
+
+    SPLASH_TIMEOUT -- "Yes" --> NAV_LANDING["Navigate to Landing (Replace URL)"]:::actionNode
+
+    %% Subgraph 2: Landing Page
+    subgraph SUB_LANDING ["2. Pantalla de Landing"]
+        NAV_LANDING --> LANDING_VIEW["Render Landing Page<br/>• Search Bar ('Catbreeds')<br/>• Grid of Breed Cards"]:::landingNode
+        LANDING_VIEW --> USER_ACTION{"User Action on Landing"}:::decisionNode
+
+        USER_ACTION -- "Type search term" --> SEARCH_FILTER["Search Input Event<br/>(Filter in English)"]:::actionNode
+        SEARCH_FILTER --> CHECK_MATCHES{"Matches found?"}:::decisionNode
+        CHECK_MATCHES -- "Yes" --> UPDATE_GRID["Update Cards Grid with Filtered Breeds"]:::landingNode
+        CHECK_MATCHES -- "No" --> EMPTY_STATE["Display Empty State<br/>'No breeds match search'"]:::stateNode
+        EMPTY_STATE --> SEARCH_FILTER
+
+        USER_ACTION -- "Tap Card or 'Más...'" --> SELECT_BREED["Select Breed<br/>(Pass Breed Model / ID)"]:::actionNode
+    end
+
+    SELECT_BREED --> NAV_DETAIL["Navigate to Detail Page"]:::actionNode
+
+    %% Subgraph 3: Detail Screen
+    subgraph SUB_DETAIL ["3. Pantalla de Detail"]
+        NAV_DETAIL --> DETAIL_VIEW["Render Detail Screen<br/>• Top: Fixed Breed Image (No Scroll)<br/>• Bottom: Scrollable Info Container"]:::detailNode
+        DETAIL_VIEW --> DETAIL_ACTION{"User Action on Detail"}:::decisionNode
+
+        DETAIL_ACTION -- "Scroll Content" --> SCROLL_INFO["Scroll Bottom Half<br/>• Description (Dynamic length)<br/>• Origin Country<br/>• Intelligence Level<br/>• Adaptability<br/>• Life Span"]:::detailNode
+        SCROLL_INFO --> DETAIL_ACTION
+
+        DETAIL_ACTION -- "Tap Back Button '<'" --> NAV_BACK["Navigate Back (Router / IonBackButton)"]:::actionNode
+    end
+
+    NAV_BACK --> LANDING_VIEW
+
