@@ -1,13 +1,43 @@
 {
-    // Keeps VS Code from suggesting Ionic components off the entry points this app
-    // does not use. Patterns are matched against resolved .d.ts paths, not import
-    // specifiers, so they name @ionic/angular's actual type files. Never use a bare
-    // "@ionic/angular" here: it matches the whole package and blocks every Ionic
-    // auto-import (ionic-team/starters#1873).
+    // Exclude internal Ionic entry points from auto-import suggestions (ionic-team/starters#1873)
     "js/ts.preferences.autoImportFileExcludePatterns": [
         "@ionic/angular/types/ionic-angular-lazy.d.ts",
         "@ionic/angular/types/ionic-angular-common.d.ts"
     ],
+
+    // Use workspace TypeScript compiler
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
+    "js/ts.preferences.includePackageJsonAutoImports": "auto",
+
+    // Default code formatting
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+
+    // ESLint auto-fix on save and validations
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": ["typescript", "html"],
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+
+    // Disable built-in HTML formatting so Prettier handles Angular templates
+    "html.format.enable": false,
+
+    // Language-specific formatter settings
+    "[typescript][javascript][html][scss][json][jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // File exclusions for search and watcher performance in Ionic/Angular
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/.angular/cache": true,
+        "**/www": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/www": true,
+        "**/.angular": true
+    }
 }

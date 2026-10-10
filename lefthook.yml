@@ -2,7 +2,7 @@
 # Documentation: https://lefthook.dev
 
 pre-commit:
-    parallel: true
+    parallel: false
     commands:
         prettier:
             glob: '*.{js,ts,html,scss,json,md,yml,yaml}'
@@ -11,6 +11,7 @@ pre-commit:
         eslint:
             glob: '*.{js,ts,html}'
             run: npx eslint {staged_files}
+            stage_fixed: true
 
 commit-msg:
     commands:

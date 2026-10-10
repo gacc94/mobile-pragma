@@ -3,7 +3,9 @@
         "WebNative.webnative",
         "esbenp.prettier-vscode",
         "EditorConfig.EditorConfig",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "Angular.ng-template",
+        "ionic.ionic"
     ],
     "unwantedRecommendations": ["biomejs.biome"]
 }
