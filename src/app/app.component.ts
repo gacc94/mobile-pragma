@@ -8,7 +8,15 @@ import { SplashScreen } from '@capacitor/splash-screen';
     imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent implements OnInit {
-    async ngOnInit() {
-        await SplashScreen.hide({ fadeOutDuration: 200 });
+    ngOnInit(): void {
+        void this.initApp();
+    }
+
+    private async initApp(): Promise<void> {
+        try {
+            await SplashScreen.hide({ fadeOutDuration: 200 });
+        } catch (error) {
+            console.warn('Could not hide splash screen:', error);
+        }
     }
 }
