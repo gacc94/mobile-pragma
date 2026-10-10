@@ -9,8 +9,11 @@
 }
 
 .custom-searchbar {
-    --background: #fff;
-    --placeholder-color: #94a3b8;
+    --background: var(--app-card-bg);
+    --color: var(--app-text-primary);
+    --placeholder-color: var(--app-text-muted);
+    --icon-color: var(--app-text-muted);
+    --clear-button-color: var(--app-text-muted);
     --border-radius: 12px;
     padding: 0 8px;
 }
@@ -31,7 +34,7 @@
 .breed-card {
     margin: 0;
     border-radius: 16px;
-    background: var(--ion-card-background, #fff);
+    background: var(--app-card-bg);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     cursor: pointer;
@@ -54,13 +57,13 @@
 }
 
 .card-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--app-border);
 }
 
 .breed-name {
     font-size: 1.15rem;
     font-weight: 700;
-    color: var(--ion-color-dark, #0f172a);
+    color: var(--app-text-primary);
     margin: 0;
 }
 
@@ -82,7 +85,7 @@
 .card-image-wrapper {
     width: 100%;
     height: 220px;
-    background-color: #f1f5f9;
+    background-color: var(--app-img-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -97,8 +100,8 @@
 }
 
 .card-footer {
-    background-color: var(--ion-card-background, #fff);
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    background-color: var(--app-card-bg);
+    border-top: 1px solid var(--app-border);
 }
 
 .footer-origin,
@@ -107,7 +110,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.9rem;
-    color: var(--ion-color-medium, #64748b);
+    color: var(--app-text-muted);
 }
 
 .footer-icon {
@@ -116,7 +119,7 @@
 }
 
 .origin-value {
-    color: var(--ion-color-dark, #0f172a);
+    color: var(--app-text-primary);
     font-weight: 600;
 }
 

@@ -15,7 +15,7 @@
     height: 45vh;
     position: relative;
     width: 100%;
-    background-color: #0f172a;
+    background-color: var(--app-img-bg, #0f172a);
     overflow: hidden;
 }
 
@@ -31,7 +31,8 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 20px 16px 40px;
-    background: var(--ion-card-background, #fff);
+    background: var(--app-card-bg, var(--ion-card-background, #fff));
+    color: var(--app-text-primary, var(--ion-text-color, #0f172a));
     border-radius: 24px 24px 0 0;
     margin-top: -16px;
     position: relative;
@@ -45,13 +46,13 @@
 .breed-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--ion-color-dark, #0f172a);
+    color: var(--app-text-primary, var(--ion-color-dark, #0f172a));
     margin: 0 0 6px;
 }
 
 .breed-temperament {
     font-size: 0.9rem;
-    color: var(--ion-color-medium, #64748b);
+    color: var(--app-text-muted, var(--ion-color-medium, #64748b));
     margin: 0;
     line-height: 1.4;
 }
@@ -63,20 +64,20 @@
 .section-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--ion-color-dark, #0f172a);
+    color: var(--app-text-primary, var(--ion-color-dark, #0f172a));
     margin: 0 0 10px;
 }
 
 .description-text {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: var(--ion-color-step-750, #334155);
+    color: var(--app-text-secondary, #cbd5e1);
     margin: 0;
 }
 
 .trait-item {
     padding: 10px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--app-border, rgba(0, 0, 0, 0.05));
 
     &:last-child {
         border-bottom: none;
@@ -95,7 +96,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.95rem;
-    color: var(--ion-color-medium, #64748b);
+    color: var(--app-text-muted, var(--ion-color-medium, #64748b));
 }
 
 .trait-icon {
@@ -105,7 +106,7 @@
 
 .trait-value {
     font-size: 0.95rem;
-    color: var(--ion-color-dark, #0f172a);
+    color: var(--app-text-primary, var(--ion-color-dark, #0f172a));
     font-weight: 600;
 }
 
@@ -119,5 +120,5 @@
 .trait-progress {
     height: 6px;
     border-radius: 3px;
-    --buffer-background: #e2e8f0;
+    --buffer-background: var(--app-progress-buffer, #e2e8f0);
 }

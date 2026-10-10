@@ -69,13 +69,13 @@
     h2 {
         font-size: 1.3rem;
         font-weight: 700;
-        color: var(--ion-color-dark, #0f172a);
+        color: var(--app-text-primary, var(--ion-color-dark, #0f172a));
         margin: 0 0 8px;
     }
 
     p {
         font-size: 0.95rem;
-        color: var(--ion-color-medium, #64748b);
+        color: var(--app-text-muted, var(--ion-color-medium, #64748b));
         margin: 0 0 20px;
         max-width: 320px;
     }
