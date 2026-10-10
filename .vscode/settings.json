@@ -12,6 +12,7 @@
     // Default code formatting
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
+    "editor.rulers": [120],
 
     // ESLint auto-fix on save and validations
     "editor.codeActionsOnSave": {
