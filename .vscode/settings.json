@@ -39,5 +39,11 @@
         "**/node_modules": true,
         "**/www": true,
         "**/.angular": true
+    },
+
+    //Disable Biome extension recommendation since it is not compatible with Prettier and ESLint
+    "biome.enabled": false,
+    "[svg]": {
+        "editor.defaultFormatter": "jock.svg"
     }
 }
