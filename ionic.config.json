@@ -1,0 +1,7 @@
+{
+  "name": "mobile-pragma",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
