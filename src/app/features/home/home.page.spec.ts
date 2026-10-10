@@ -161,17 +161,6 @@ describe('HomePage', () => {
         vi.useRealTimers();
     });
 
-    it('should replace image source with fallback image on error event', () => {
-        fixture.detectChanges();
-        const img = document.createElement('img');
-        img.src = 'https://broken-url.com/cat.jpg';
-
-        const errorEvent = { target: img } as unknown as Event;
-        component.onImageError(errorEvent);
-
-        expect(img.src).toContain(component.fallbackImageUrl);
-    });
-
     it('should render skeleton loading items when store is loading without cached breeds', () => {
         isLoadingSignal.set(true);
         hasBreedsSignal.set(false);

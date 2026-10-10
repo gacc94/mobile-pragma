@@ -37,6 +37,8 @@ import {
 } from 'ionicons/icons';
 import { CatBreedsStore } from '../../core/store/cat-breeds.store';
 import { ThemeMode, ThemeStore } from '../../core/store/theme.store';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ImageUrlFallbackPipe } from '../../shared/pipes/image-url-fallback.pipe';
 
 @Component({
     selector: 'app-home',
@@ -65,6 +67,8 @@ import { ThemeMode, ThemeStore } from '../../core/store/theme.store';
         IonIcon,
         IonButton,
         IonBadge,
+        ImageFallbackDirective,
+        ImageUrlFallbackPipe,
     ],
 })
 export class HomePage {
@@ -108,13 +112,6 @@ export class HomePage {
     onSelectBreed(breedId: string): void {
         this.store.selectBreed(breedId);
         void this.router.navigate(['/detail', breedId]);
-    }
-
-    onImageError(event: Event): void {
-        const img = event.target as HTMLImageElement;
-        if (img && !img.src.includes(this.fallbackImageUrl)) {
-            img.src = this.fallbackImageUrl;
-        }
     }
 
     onSelectTheme(mode: string): void {

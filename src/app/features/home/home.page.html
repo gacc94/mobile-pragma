@@ -123,11 +123,12 @@
                 <!-- Middle: Cat Image -->
                 <div class="card-image-wrapper">
                     <img
-                        [src]="breed.image?.url || fallbackImageUrl"
+                        [src]="breed.image?.url | imageUrlFallback:fallbackImageUrl"
+                        [appImageFallback]="fallbackImageUrl"
                         [alt]="breed.name + ' cat'"
                         class="card-image"
                         loading="lazy"
-                        (error)="onImageError($event)"
+                        decoding="async"
                     />
                 </div>
 

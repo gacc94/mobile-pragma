@@ -62,10 +62,11 @@
         <!-- 1. Fixed Upper Half: Image never scrolls -->
         <div class="fixed-hero-wrapper">
             <img
-                [src]="breed.image?.url || fallbackImageUrl"
+                [src]="breed.image?.url | imageUrlFallback:fallbackImageUrl"
+                [appImageFallback]="fallbackImageUrl"
                 [alt]="breed.name + ' cat'"
                 class="hero-image"
-                (error)="onImageError($event)"
+                decoding="async"
             />
         </div>
 

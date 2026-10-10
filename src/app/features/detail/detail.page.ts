@@ -24,6 +24,8 @@ import {
     timeOutline,
 } from 'ionicons/icons';
 import { CatBreedsStore } from '../../core/store/cat-breeds.store';
+import { ImageFallbackDirective } from '../../shared/directives/image-fallback.directive';
+import { ImageUrlFallbackPipe } from '../../shared/pipes/image-url-fallback.pipe';
 
 @Component({
     selector: 'app-detail',
@@ -43,6 +45,8 @@ import { CatBreedsStore } from '../../core/store/cat-breeds.store';
         IonButton,
         IonProgressBar,
         IonSkeletonText,
+        ImageFallbackDirective,
+        ImageUrlFallbackPipe,
     ],
 })
 export class DetailPage {
@@ -68,12 +72,5 @@ export class DetailPage {
                 this.store.selectBreed(breedId);
             }
         });
-    }
-
-    onImageError(event: Event): void {
-        const img = event.target as HTMLImageElement;
-        if (img && !img.src.includes(this.fallbackImageUrl)) {
-            img.src = this.fallbackImageUrl;
-        }
     }
 }

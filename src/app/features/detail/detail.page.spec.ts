@@ -107,13 +107,15 @@ describe('DetailPage', () => {
         expect(errorState?.textContent).toContain('Raza no encontrada');
     });
 
-    it('should fallback to placeholder image on image error event', () => {
+    it('should fallback to placeholder image on image error event via directive', () => {
+        selectedBreedSignal.set(mockBreed);
         fixture.detectChanges();
-        const img = document.createElement('img');
-        img.src = 'https://broken-image.com/cat.jpg';
 
-        const errorEvent = { target: img } as unknown as Event;
-        component.onImageError(errorEvent);
+        const img = fixture.nativeElement.querySelector('.hero-image') as HTMLImageElement;
+        expect(img).toBeTruthy();
+
+        img.dispatchEvent(new Event('error'));
+        fixture.detectChanges();
 
         expect(img.src).toContain(component.fallbackImageUrl);
     });
