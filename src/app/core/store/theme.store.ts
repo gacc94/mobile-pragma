@@ -90,10 +90,6 @@ export const ThemeStore = signalStore(
         };
     }),
     withMethods((store) => ({
-        /**
-         * Sets and persists the theme mode across localStorage (instant sync)
-         * and Capacitor Preferences (native UserDefaults / SharedPreferences).
-         */
         setThemeMode(mode: ThemeMode): void {
             patchState(store, { mode });
 
@@ -102,24 +98,18 @@ export const ThemeStore = signalStore(
                     localStorage.setItem(THEME_STORAGE_KEY, mode);
                 }
             } catch {
-                // Storage access handling
+                // Ignore storage errors in restricted contexts
             }
 
-            void Preferences.set({ key: THEME_STORAGE_KEY, value: mode }).catch(() => {
-                // Non-fatal native preference save error
-            });
+            void Preferences.set({ key: THEME_STORAGE_KEY, value: mode }).catch(() => undefined);
         },
 
-        /**
-         * Updates the detected system dark preference (from matchMedia).
-         */
         updateSystemDark(systemDark: boolean): void {
             patchState(store, { systemDark });
         },
     })),
     withHooks({
         onInit(store) {
-            // Asynchronously hydrate from Capacitor Preferences (UserDefaults / SharedPreferences)
             void Preferences.get({ key: THEME_STORAGE_KEY })
                 .then(({ value }) => {
                     if (isValidThemeMode(value) && value !== store.mode()) {
@@ -129,15 +119,12 @@ export const ThemeStore = signalStore(
                                 localStorage.setItem(THEME_STORAGE_KEY, value);
                             }
                         } catch {
-                            // Non-fatal storage sync
+                            // Ignore storage errors in restricted contexts
                         }
                     }
                 })
-                .catch(() => {
-                    // Non-fatal native preference read error
-                });
+                .catch(() => undefined);
 
-            // Listen to OS system color scheme changes if available
             if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
                 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
                 store.updateSystemDark(mediaQuery.matches);
@@ -153,7 +140,6 @@ export const ThemeStore = signalStore(
                 }
             }
 
-            // Synchronize document palette and color-scheme reactively
             effect(() => {
                 const dark = store.isDark();
                 if (typeof document !== 'undefined') {

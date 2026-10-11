@@ -84,59 +84,37 @@ export const CatBreedsStore = signalStore(
         },
     ),
     withMethods((store) => ({
-        /**
-         * Re-fetches the breeds resource and resets displayed pagination limit.
-         */
         loadBreeds(): void {
             patchState(store, { displayedLimit: DEFAULT_PAGE_SIZE });
             store.breedsResource.reload();
         },
 
-        /**
-         * Increases the visible limit of breeds rendered in the DOM by one pageSize.
-         */
         loadMoreBreeds(): void {
             patchState(store, (state) => ({ displayedLimit: state.displayedLimit + state.pageSize }));
         },
 
-        /**
-         * Resets the progressive pagination window to initial page size.
-         */
         resetPagination(): void {
             patchState(store, { displayedLimit: DEFAULT_PAGE_SIZE });
         },
 
-        /**
-         * Selects a breed ID to display in detail.
-         */
         selectBreed(id: string | null): void {
             patchState(store, { selectedId: id });
         },
 
-        /**
-         * Updates the reactive search filter query and resets pagination.
-         */
         setSearchQuery(query: string): void {
             patchState(store, { searchQuery: query, displayedLimit: DEFAULT_PAGE_SIZE });
         },
 
-        /**
-         * Resets the active search query and pagination limit.
-         */
         clearSearch(): void {
             patchState(store, { searchQuery: '', displayedLimit: DEFAULT_PAGE_SIZE });
         },
 
-        /**
-         * Synchronously finds a breed by ID in current entityMap.
-         */
         getBreedById(id: string): CatBreed | undefined {
             return store.entityMap()[id];
         },
     })),
     withHooks({
         onInit(store) {
-            // Automatically synchronize loaded breeds from httpResource into withEntities collection
             effect(() => {
                 const breeds = store.breedsResource.value();
                 if (breeds && breeds.length > 0) {
@@ -144,7 +122,6 @@ export const CatBreedsStore = signalStore(
                 }
             });
 
-            // Automatically synchronize single loaded breed from httpResource into withEntities collection
             effect(() => {
                 const single = store.singleBreedResource.value();
                 if (single) {

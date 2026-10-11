@@ -8,7 +8,6 @@
 </ion-header>
 
 <ion-content [scrollY]="false" class="detail-content">
-    <!-- Loading State -->
     @if (store.isLoading() && !store.selectedBreed()) {
         <div class="detail-container" aria-busy="true" aria-label="Loading cat breed details">
             <div class="fixed-hero-wrapper skeleton-hero">
@@ -43,7 +42,6 @@
         </div>
     }
 
-    <!-- Error / Not Found State -->
     @if (!store.isLoading() && !store.selectedBreed()) {
         <div class="state-message error-state" role="alert">
             <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
@@ -56,10 +54,8 @@
         </div>
     }
 
-    <!-- Breed Details View -->
     @if (store.selectedBreed(); as breed) {
         <div class="detail-container">
-            <!-- 1. Fixed Upper Half: Image never scrolls -->
             <div class="fixed-hero-wrapper">
                 <img
                     [src]="breed.image?.url | imageUrlFallback: fallbackImageUrl"
@@ -70,7 +66,6 @@
                 />
             </div>
 
-            <!-- 2. Scrollable Lower Half: Scrollable info container -->
             <div class="scrollable-info-pane" tabindex="0" role="region" aria-label="Información de la raza">
                 <header class="pane-header">
                     <h1 class="breed-title">{{ breed.name }}</h1>

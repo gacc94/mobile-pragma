@@ -52,7 +52,6 @@
     </ion-refresher>
 
     <div class="content-container">
-        <!-- Loading Skeletons -->
         @if (store.isLoading() && !store.hasBreeds()) {
             <div class="skeleton-list" aria-busy="true" aria-label="Loading cat breeds">
                 @for (item of [1, 2, 3]; track item) {
@@ -73,7 +72,6 @@
             </div>
         }
 
-        <!-- Error State -->
         @if (store.error() && !store.hasBreeds()) {
             <div class="state-message error-state" role="alert">
                 <ion-icon name="alert-circle-outline" class="state-icon"></ion-icon>
@@ -86,7 +84,6 @@
             </div>
         }
 
-        <!-- Empty Search State -->
         @if (!store.isLoading() && store.hasBreeds() && store.totalFilteredBreeds() === 0) {
             <div class="state-message empty-state" role="status">
                 <ion-icon name="search-outline" class="state-icon"></ion-icon>
@@ -96,7 +93,6 @@
             </div>
         }
 
-        <!-- Breeds Cards Grid -->
         @if (store.filteredBreeds().length > 0) {
             <section class="cards-grid" aria-label="Cat breeds list">
                 @for (breed of store.visibleBreeds(); track breed.id) {
@@ -107,7 +103,6 @@
                         role="article"
                         tabindex="0"
                     >
-                        <!-- Top line: Breed Name and "Más..." button -->
                         <ion-card-header class="card-header">
                             <ion-card-title class="breed-name">{{ breed.name }}</ion-card-title>
                             <button
@@ -120,7 +115,6 @@
                             </button>
                         </ion-card-header>
 
-                        <!-- Middle: Cat Image -->
                         <div class="card-image-wrapper">
                             <img
                                 [src]="breed.image?.url | imageUrlFallback: fallbackImageUrl"
@@ -132,7 +126,6 @@
                             />
                         </div>
 
-                        <!-- Bottom line: Country of Origin and Intelligence -->
                         <ion-card-content class="card-footer">
                             <div class="footer-origin">
                                 <ion-icon name="location-outline" class="footer-icon"></ion-icon>

@@ -41,21 +41,21 @@ Aplicación móvil multiplataforma desarrollada para la prueba técnica de **Pra
 
 ---
 
-## 🎯 Alcance
+## 🎯 Funcionalidades y Alcance
 
-- **Splash Screen**: Pantalla de carga nativa y web con animación e inicialización en segundo plano.
-- **Landing / Catbreeds**:
-    - Listado de razas con imagen, país de origen, inteligencia y enlace _"Más..."_.
-    - Búsqueda en tiempo real con debounce.
-    - Pull-to-refresh nativo y carga progresiva (`ion-infinite-scroll`) con renderizado optimizado (`content-visibility: auto`).
-    - Selector de tema Claro / Oscuro / Sistema persistente con `@capacitor/preferences`.
+- **Splash Screen**: Pantalla de presentación con soporte para plataformas nativas y web, inicialización del estado y precarga de datos en segundo plano.
+- **Landing (Catbreeds)**:
+    - Exploración de razas con fotografía, país de origen, nivel de inteligencia y enlace directo al detalle.
+    - Búsqueda reactiva con filtrado en tiempo real.
+    - Actualización mediante Pull-to-refresh y paginación progresiva infinita (`ion-infinite-scroll`) optimizada para alto rendimiento.
+    - Selector de tema (Claro, Oscuro y Sistema) persistido en almacenamiento nativo con `@capacitor/preferences`.
 - **Detalle de Raza**:
-    - Mitad superior fija con imagen que no hace scroll (45vh).
-    - Mitad inferior con scroll independiente (descripción, país, barras de progreso de inteligencia y adaptabilidad, esperanza de vida y temperamento).
+    - Vista detallada con cabecera de imagen fija y panel inferior con desplazamiento independiente.
+    - Atributos detallados: temperamento, descripción, origen, esperanza de vida e indicadores visuales de inteligencia y adaptabilidad.
 - **Arquitectura & Estado**:
-    - Angular 22 Zoneless con Signals y `httpResource`.
-    - Interceptor HTTP funcional para inyección de `x-api-key`.
-    - Estado global reactivo con `@ngrx/signals`.
+    - Angular 22 Zoneless reactivo basado en Signals y `httpResource`.
+    - Inyección automática de `x-api-key` mediante interceptor funcional HTTP.
+    - Gestión de estado global con `@ngrx/signals`.
 
 ---
 

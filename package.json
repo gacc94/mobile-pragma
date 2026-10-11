@@ -1,8 +1,9 @@
 {
     "name": "mobile-pragma",
-    "version": "0.0.1",
-    "author": "Ionic Framework",
-    "homepage": "https://ionicframework.com/",
+    "version": "1.0.0",
+    "description": "Catbreeds - Aplicación móvil desarrollada con Ionic, Angular y Capacitor",
+    "author": "Gustavo Caqui",
+    "homepage": "https://github.com/gacc94/mobile-pragma",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
@@ -59,7 +60,6 @@
         "typescript-eslint": "^8.61.0",
         "vitest": "~4.0.18"
     },
-    "description": "An Ionic project",
     "allowScripts": {
         "sharp@0.32.6": true
     }

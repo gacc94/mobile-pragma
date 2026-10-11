@@ -43,6 +43,8 @@ yarn-error.log
 .settings/
 *.sublime-project
 *.sublime-workspace
+.agents/
+.gemini/
 
 # Visual Studio Code
 .vscode/*
@@ -68,7 +70,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-#Agents
-.agents/*
-.gemini/*
