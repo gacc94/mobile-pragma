@@ -12,13 +12,32 @@ Aplicación móvil multiplataforma desarrollada para la prueba técnica de **Pra
 
 ## 📱 Demostración
 
-<p align="center">
-  <a href="docs/assets/android_demo.mp4">
-    <img src="docs/assets/android_demo.gif" alt="Demostración Android" width="280" style="border-radius: 12px;" />
-  </a>
-  <br />
-  <a href="docs/assets/android_demo.mp4">🎬 Ver video completo en alta resolución (MP4)</a>
-</p>
+<table align="center">
+  <thead>
+    <tr>
+      <th align="center">🤖 Android</th>
+      <th align="center">🍏 iOS</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <a href="docs/assets/android_demo.mp4">
+          <img src="docs/assets/android_demo.gif" alt="Demostración Android" width="270" style="border-radius: 12px;" />
+        </a>
+        <br />
+        <a href="docs/assets/android_demo.mp4">🎬 Ver video completo (MP4)</a>
+      </td>
+      <td align="center" valign="top">
+        <a href="docs/assets/ios_demo.mp4">
+          <img src="docs/assets/ios_demo.gif" alt="Demostración iOS" width="270" style="border-radius: 12px;" />
+        </a>
+        <br />
+        <a href="docs/assets/ios_demo.mp4">🎬 Ver video completo (MP4)</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
@@ -56,7 +75,7 @@ Aplicación móvil multiplataforma desarrollada para la prueba técnica de **Pra
 
 - Node.js >= 20
 - npm >= 10
-- JDK 21 & Android Studio (solo si se compila para Android)
+- JDK 21 & Android Studio (para Android) / macOS & Xcode (para iOS)
 
 ### 1. Clonar e Instalar
 
@@ -89,7 +108,18 @@ cd android && ./gradlew assembleDebug
 # APK generado en: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### 4. Pruebas Unitarias y Calidad
+### 4. Ejecutar en iOS
+
+```bash
+# Compilar recursos web y sincronizar con iOS
+npm run build
+npx cap sync ios
+
+# Abrir en Xcode (requiere macOS)
+npx cap open ios
+```
+
+### 5. Pruebas Unitarias y Calidad
 
 ```bash
 npm test -- --watch=false   # Ejecutar 51 pruebas unitarias
