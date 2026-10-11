@@ -7,7 +7,6 @@ import {
     withComponentInputBinding,
     withPreloading,
     PreloadAllModules,
-    withViewTransitions,
 } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
@@ -19,6 +18,6 @@ bootstrapApplication(AppComponent, {
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         provideIonicAngular(),
         provideHttpClient(withFetch(), withInterceptors([catApiKeyInterceptor])),
-        provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding(), withViewTransitions()),
+        provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
     ],
 });
